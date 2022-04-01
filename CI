@@ -1,0 +1,64 @@
+pipeline{
+agent any 
+
+parameters {
+  string defaultValue: 'master', description: 'Please select the name', name: 'name', trim: true
+  choice choices: ['master', 'Dev', 'UAT', 'Prod'], description: 'Please select the Branch', name: 'Branch'
+  booleanParam defaultValue: true, description: 'Please select the Deploy', name: 'Deploy'
+}
+
+stages{
+stage("SCM"){
+steps{
+script{
+echo "Cloning is started"
+git branch: '$Branch', credentialsId: 'git_password', url: 'https://github.com/chaithushanvi/chaithuprojecct.git'
+echo "Cloning is completed"
+      }
+       }
+     }
+stage("Build"){
+steps{
+script {
+echo "Build is started"
+sh 'mvn clean package'
+echo "Build is completed"
+        }
+       }
+     }	 
+stage("Sonar-qubes or Quality_check"){
+steps{
+script {
+echo "Sonar is started"
+
+echo "Sonar is completed"
+        }
+       }
+
+     }	
+	 
+stage("Nexus or Jfrog"){
+steps{
+script {
+echo "Nexus is started"
+
+echo "Nexus is completed"
+        }
+       }
+
+     }		 
+
+stage("Parallel job"){
+steps{
+script {
+echo "Parallel job is started"
+    build job: 'CD', parameters: [string(name: 'name', value:"${params.name}"),
+	                              string(name: 'Branch', value:"${params.Branch}"),
+								  string(name: 'Deploy', value:"${params.Deploy}")]
+echo "Parallel job is completed"
+        }
+       }
+
+     }	 	 
+   }
+ }
