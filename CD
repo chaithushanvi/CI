@@ -1,0 +1,39 @@
+pipeline {
+agent any
+
+parameters {
+  string(name: 'Branch',defaultValue: '',, description: 'Please select the name',trim: true)
+  string(name: 'Branch',defaultValue: '',, description: 'Please select the Branch')
+  string(name: 'Deploy', defaultValue: '', description: 'Please select the Deploy')
+}
+stages{
+stage("Verification"){
+steps{
+script{
+echo "Verification is started"
+echo "${params.Branch}"
+echo "${params.Branch}"
+echo "${params.Deploy}"
+echo "verification is complted"
+          }
+      }
+    }
+stage("Deployement"){
+    when{
+expression {params.name=="master" && params.Deploy=="true"}
+}
+
+steps{
+script {
+echo "Deployement is started"
+sh 'ssh root@172.31.40.0 /opt/tomcat/bin/shutdown.sh'
+sh 'scp -o StrictHostKeyChecking=no /var/lib/jenkins/workspace/CI/target/citibank.war root@172.31.40.0:/opt/tomcat/webapps'
+sh 'ssh root@172.31.40.0 /opt/tomcat/bin/startup.sh'
+echo "Deployement is completed"
+
+         }
+      } 	    
+	   
+     }
+   }
+ }
